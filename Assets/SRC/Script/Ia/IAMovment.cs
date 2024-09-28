@@ -6,54 +6,20 @@ using UnityEngine.AI;
 public class IAMovment : MonoBehaviour
 {
     private NavMeshAgent nav;
-    [Header("Enemy info")]
-    [SerializeField]
-    private float attackRange;
-    [SerializeField]
-    private float attackSpeed;
-    [SerializeField]
-    private float currentAttackCooldown;
-    [SerializeField]
-    private int[] attackDamege;
-    public bool canAttack;
-
-    [Header("Player info")]
-    public Transform player;
-    // Start is called before the first frame update
     void Start()
     {
         nav=GetComponent<NavMeshAgent>();
-        nav.stoppingDistance = attackRange;
 
     }
-
-    // Update is called once per frame
-    void Update()
+    public bool Chase(Transform target)
     {
-        if (player == null) return;
-        if (canAttack)
+        if(!target) return false;
+        if(Vector3.Distance(transform.position, target.position) > nav.stoppingDistance)
         {
-            Attack();
+            nav.SetDestination(target.position);
+            return true;
         }
-        else
-        {
-            currentAttackCooldown -= Time.deltaTime;
-            if (currentAttackCooldown < 0)
-            {
-                currentAttackCooldown = 0;
-                canAttack = true;
-                currentAttackCooldown = attackSpeed;
-            }
-        }
-        Chase();
+        return false;
     }
-    void Chase()
-    {
-        nav.SetDestination(player.position);
-    }
-    void Attack() 
-    {
-        canAttack = false;
-        player.GetComponent<IDamageable>().TakeDamege(Random.Range(attackDamege[0], attackDamege[1]));
-    }
+   
 }
